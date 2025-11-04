@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public GameObject rewardPanel;
 
     public int tapsToMeet = 5;
-
     private bool gameEnded = false;
 
     void Start()
@@ -18,10 +17,13 @@ public class GameManager : MonoBehaviour
         pig.totalTapsToCenter = tapsToMeet;
         progressBar.totalTaps = tapsToMeet;
 
+        // auto center calculation
+        Vector3 centerPoint = (bird.startPosition + pig.startPosition) / 2f;
+        bird.endPosition = centerPoint;
+        pig.endPosition = centerPoint;
+
         progressBar.ResetBar();
         rewardPanel.SetActive(false);
-
-        // ✅ Listen to event
         progressBar.OnProgressFull += HandleProgressFull;
     }
 
@@ -32,41 +34,48 @@ public class GameManager : MonoBehaviour
             bird.MoveOneStep();
             pig.MoveOneStep();
             progressBar.IncrementProgress();
+
+            var birdAnim = bird.GetComponentInChildren<BirdAnimator>();
+            if (birdAnim != null) birdAnim.TriggerHop();
         }
     }
 
     private void HandleProgressFull()
     {
-        if (!gameEnded)
-        {
-            gameEnded = true;
-            StartCoroutine(FinishSequence());
-        }
+        if (gameEnded) return;
+        gameEnded = true;
+        StartCoroutine(FinishSequence());
     }
 
     private IEnumerator FinishSequence()
     {
-        // Bird hops onto pig’s head
-        Vector3 target = pig.transform.position + new Vector3(0, 1.5f, 0);
-        Vector3 start = bird.transform.position;
-        float t = 0;
+        // Pig defeated
+        var pigAnim = pig.GetComponentInChildren<PigAnimator>();
+        if (pigAnim != null) pigAnim.Defeated();
 
+        // Bird jumps onto Pig
+        var birdAnim = bird.GetComponentInChildren<BirdAnimator>();
+        if (birdAnim != null)
+            birdAnim.JumpOntoPig(pig.transform);
+
+        // Camera zoom
+        Camera mainCam = Camera.main;
+        float originalSize = mainCam.orthographicSize;
+        float targetSize = originalSize * 0.8f;
+        float t = 0f;
         while (t < 1f)
         {
-            t += Time.deltaTime * 2;
-            bird.transform.position = Vector3.Lerp(start, target, Mathf.SmoothStep(0, 1, t));
+            t += Time.deltaTime * 1.5f;
+            mainCam.orthographicSize = Mathf.Lerp(originalSize, targetSize, Mathf.SmoothStep(0, 1, t));
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.5f);
-
-        // Show reward panel
+        yield return new WaitForSeconds(3f);
         rewardPanel.SetActive(true);
     }
 
     void OnDestroy()
     {
-        // Clean up subscription
         progressBar.OnProgressFull -= HandleProgressFull;
     }
 }
