@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     public ProgressBarController progressBar;
     public GameObject rewardPanel;
 
+    [Header("Dust Poof Effect")]
+    public ParticleSystem dustPoof; // 🔥 assign your scene particle system
+
     public int tapsToMeet = 5;
     private bool gameEnded = false;
 
@@ -25,6 +28,10 @@ public class GameManager : MonoBehaviour
         progressBar.ResetBar();
         rewardPanel.SetActive(false);
         progressBar.OnProgressFull += HandleProgressFull;
+
+        // make sure dustPoof is stopped initially
+        if (dustPoof != null)
+            dustPoof.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     void Update()
@@ -51,18 +58,27 @@ public class GameManager : MonoBehaviour
     {
         // Pig defeated
         var pigAnim = pig.GetComponentInChildren<PigAnimator>();
-        if (pigAnim != null) pigAnim.Defeated();
+        if (pigAnim != null)
+            pigAnim.Defeated();
 
         // Bird jumps onto Pig
         var birdAnim = bird.GetComponentInChildren<BirdAnimator>();
         if (birdAnim != null)
             birdAnim.JumpOntoPig(pig.transform);
 
+        // 💨 Play dust particle under Pig
+        if (dustPoof != null)
+        {
+            dustPoof.transform.position = pig.transform.position + new Vector3(0, -1f, 0);
+            dustPoof.Play();
+        }
+
         // Camera zoom
         Camera mainCam = Camera.main;
         float originalSize = mainCam.orthographicSize;
         float targetSize = originalSize * 0.8f;
         float t = 0f;
+
         while (t < 1f)
         {
             t += Time.deltaTime * 1.5f;
