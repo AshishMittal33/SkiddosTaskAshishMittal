@@ -4,7 +4,7 @@ https://github.com/user-attachments/assets/23ea1e4c-eed8-44b1-aeab-82ede3782bd2
 
 A fun 2D Unity project where a bird chases a pig across a forest path with smooth parallax, tap-based movement, progress tracking, and reward screen.
 
-🎮 Game Overview
+# 🎮 Game Overview
 
 Bird starts on the left, Pig on the right.
 
@@ -20,7 +20,7 @@ Middle (ground)
 
 Rear (slow bushes)
 
-📊 Progress System
+# 📊 Progress System
 
 Progress bar at the top fills with each tap.
 
@@ -28,7 +28,7 @@ Reaches 100% → Bird catches Pig → Reward screen appears.
 
 Number of taps required is configurable in the Inspector.
 
-🎵 Audio & FX
+# 🎵 Audio & FX
 
 Continuous BGM during chase → fades out at victory.
 
@@ -36,7 +36,7 @@ Hop SFX, Defeat SFX, and Happy SFX for characters.
 
 Trail when bird hops and dust burst when landing on pig.
 
-🧩 UI Flow
+# 🧩 UI Flow
 
 Start Screen: Play button → begins chase.
 
@@ -44,7 +44,7 @@ Game Scene: Bird & Pig chase + progress bar.
 
 Reward Screen: “You Won!” + Back button → Start screen.
 
-🕹️ Gameplay Summary
+# 🕹️ Gameplay Summary
 
 Tap → Bird moves right, Pig moves left.
 
@@ -52,7 +52,7 @@ After X taps → Bird jumps on Pig’s head.
 
 Pig squishes, BGM fades → Reward screen shows.
 
-⚙️ Core Scripts
+# ⚙️ Core Scripts
 Script	Function
 GameManager	Tap logic, win flow
 CharacterMover	Movement interpolation
@@ -61,9 +61,9 @@ BirdAnimator	Hop + victory animation
 PigAnimator	Hop + defeat animation
 ParallaxLayer	Background scrolling
 ButtonScenePop	UI entry pop effect
-🛠️ Tech Used
+# 🛠️ Tech Used
 
-Unity 2021.3+
+Unity 6000.2.6f2
 
 C#
 
@@ -71,9 +71,4 @@ Particle System
 
 Unity UI
 
-👨‍💻 Developer
 
-Ashish Mittal
-Unity Game Developer 🎮
-
-“Simple mechanics, polished feedback — fun experience!”
