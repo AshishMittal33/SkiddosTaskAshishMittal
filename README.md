@@ -1,6 +1,6 @@
 https://github.com/user-attachments/assets/23ea1e4c-eed8-44b1-aeab-82ede3782bd2
 
-#🐦 Bird vs Pig – Unity 2D Mini Game
+# 🐦 Bird vs Pig – Unity 2D Mini Game
 
 A fun 2D Unity project where a bird chases a pig across a forest path with smooth parallax, tap-based movement, progress tracking, and reward screen.
 
