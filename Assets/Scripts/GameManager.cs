@@ -1,0 +1,98 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class GameManager : MonoBehaviour
+{
+    public CharacterMover bird;
+    public CharacterMover pig;
+    public ProgressBarController progressBar;
+    public GameObject rewardPanel;
+
+    [Header("Dust Poof Effect")]
+    public ParticleSystem dustPoof; // 🔥 assign your scene particle system
+
+    public int tapsToMeet = 5;
+    private bool gameEnded = false;
+    public AudioSource backgroundsound;
+    void Start()
+    {
+        bird.totalTapsToCenter = tapsToMeet;
+        pig.totalTapsToCenter = tapsToMeet;
+        progressBar.totalTaps = tapsToMeet;
+
+        // auto center calculation
+        Vector3 centerPoint = (bird.startPosition + pig.startPosition) / 2f;
+        bird.endPosition = centerPoint;
+        pig.endPosition = centerPoint;
+
+        progressBar.ResetBar();
+        rewardPanel.SetActive(false);
+        progressBar.OnProgressFull += HandleProgressFull;
+
+        // make sure dustPoof is stopped initially
+        if (dustPoof != null)
+            dustPoof.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && !gameEnded)
+        {
+            bird.MoveOneStep();
+            pig.MoveOneStep();
+            progressBar.IncrementProgress();
+
+            var birdAnim = bird.GetComponentInChildren<BirdAnimator>();
+            if (birdAnim != null) birdAnim.TriggerHop();
+        }
+    }
+
+    private void HandleProgressFull()
+    {
+        if (gameEnded) return;
+        gameEnded = true;
+        StartCoroutine(FinishSequence());
+    }
+
+    private IEnumerator FinishSequence()
+    {
+        backgroundsound.Stop();
+        // Pig defeated
+        var pigAnim = pig.GetComponentInChildren<PigAnimator>();
+        if (pigAnim != null)
+            pigAnim.Defeated();
+
+        // Bird jumps onto Pig
+        var birdAnim = bird.GetComponentInChildren<BirdAnimator>();
+        if (birdAnim != null)
+            birdAnim.JumpOntoPig(pig.transform);
+
+        // 💨 Play dust particle under Pig
+        if (dustPoof != null)
+        {
+            dustPoof.transform.position = pig.transform.position + new Vector3(0, -1f, 0);
+            dustPoof.Play();
+        }
+
+        // Camera zoom
+        Camera mainCam = Camera.main;
+        float originalSize = mainCam.orthographicSize;
+        float targetSize = originalSize * 0.8f;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 1.5f;
+            mainCam.orthographicSize = Mathf.Lerp(originalSize, targetSize, Mathf.SmoothStep(0, 1, t));
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(2f);
+        rewardPanel.SetActive(true);
+    }
+
+    void OnDestroy()
+    {
+        progressBar.OnProgressFull -= HandleProgressFull;
+    }
+}
