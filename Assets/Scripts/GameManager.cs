@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     public int tapsToMeet = 5;
     private bool gameEnded = false;
-
+    public AudioSource backgroundsound;
     void Start()
     {
         bird.totalTapsToCenter = tapsToMeet;
@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FinishSequence()
     {
+        backgroundsound.Stop();
         // Pig defeated
         var pigAnim = pig.GetComponentInChildren<PigAnimator>();
         if (pigAnim != null)
@@ -86,7 +87,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
         rewardPanel.SetActive(true);
     }
 
